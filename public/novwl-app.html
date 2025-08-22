@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小説投稿サイト</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .novel-list {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .novel-item {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .novel-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .novel-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .novel-description {
+            color: #666;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        
+        .novel-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #888;
+            font-size: 0.9em;
+        }
+        
+        .chapter-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+        
+        .chapter-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .chapter-number {
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .chapter-content {
+            margin-top: 10px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 小説投稿サイト</h1>
+        
+        <div id="message"></div>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('list')">小説一覧</div>
+            <div class="tab" onclick="switchTab('create')">新規投稿</div>
+        </div>
+        
+        <!-- 小説一覧タブ -->
+        <div id="list-tab" class="tab-content active">
+            <div class="card">
+                <h2>投稿された小説</h2>
+                <button onclick="loadNovels()" style="margin: 20px 0;">一覧を更新</button>
+                <div id="novel-list" class="novel-list">
+                    <div class="loading">読み込み中...</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 新規投稿タブ -->
+        <div id="create-tab" class="tab-content">
+            <div class="card">
+                <h2>新しい小説を投稿</h2>
+                <form onsubmit="createNovel(event)">
+                    <div class="form-group">
+                        <label for="title">タイトル</label>
+                        <input type="text" id="title" required placeholder="例：吾輩は猫である">
+                    </div>
+                    <div class="form-group">
+                        <label for="author">著者名</label>
+                        <input type="text" id="author" placeholder="例：夏目漱石（空欄の場合はkerok）">
+                    </div>
+                    <div class="form-group">
+                        <label for="description">あらすじ</label>
+                        <textarea id="description" required placeholder="この小説のあらすじを入力してください..."></textarea>
+                    </div>
+                    <button type="submit">小説を投稿</button>
+                </form>
+            </div>
+            
+            <div class="card" style="margin-top: 20px;">
+                <h2>章を追加</h2>
+                <form onsubmit="addChapter(event)">
+                    <div class="form-group">
+                        <label for="novel-select">小説を選択</label>
+                        <select id="novel-select" required style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                            <option value="">-- 小説を選択してください --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="chapter-number">章番号</label>
+                        <input type="number" id="chapter-number" required min="1" placeholder="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="chapter-title">章タイトル</label>
+                        <input type="text" id="chapter-title" required placeholder="例：第一章 出会い">
+                    </div>
+                    <div class="form-group">
+                        <label for="chapter-content">本文</label>
+                        <textarea id="chapter-content" required style="min-height: 200px;" placeholder="章の本文を入力してください..."></textarea>
+                    </div>
+                    <button type="submit">章を追加</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- 小説詳細表示（モーダル的に使用） -->
+        <div id="novel-detail" style="display: none;">
+            <div class="card">
+                <button onclick="closeDetail()" style="margin-bottom: 20px;">← 一覧に戻る</button>
+                <div id="detail-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ページ読み込み時に小説一覧を取得
+        window.onload = function() {
+            loadNovels();
+        };
+
+        // タブ切り替え
+        function switchTab(tabName) {
+            // すべてのタブとコンテンツを非アクティブに
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // 選択されたタブをアクティブに
+            if (tabName === 'list') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('list-tab').classList.add('active');
+                loadNovels();
+            } else if (tabName === 'create') {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('create-tab').classList.add('active');
+                loadNovelSelect();
+            }
+        }
+
+        // 小説一覧を取得
+        function loadNovels() {
+            fetch('/api/novels')
+                .then(response => response.json())
+                .then(novels => {
+                    const listDiv = document.getElementById('novel-list');
+                    
+                    if (novels.length === 0) {
+                        listDiv.innerHTML = '<p style="text-align: center; color: #666;">まだ小説が投稿されていません。</p>';
+                        return;
+                    }
+                    
+                    listDiv.innerHTML = novels.map(novel => `
+                        <div class="novel-item" onclick="showNovelDetail(${novel.id})">
+                            <div class="novel-title">${escapeHtml(novel.title)}</div>
+                            <div class="novel-description">${escapeHtml(novel.description)}</div>
+                            <div class="novel-meta">
+                                <span>著者: ${escapeHtml(novel.author_name)}</span>
+                                <span>章数: ${novel.chapters_count || 0}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showMessage('小説の取得に失敗しました', 'error');
+                });
+        }
+
+        // 小説の詳細を表示
+        function showNovelDetail(novelId) {
+            fetch(`/api/novels/${novelId}`)
+                .then(response => response.json())
+                .then(novel => {
+                    const detailDiv = document.getElementById('detail-content');
+                    
+                    let chaptersHtml = '';
+                    if (novel.chapters && novel.chapters.length > 0) {
+                        chaptersHtml = novel.chapters.map(chapter => `
+                            <div class="chapter-item">
+                                <div class="chapter-number">第${chapter.chapter_number}章: ${escapeHtml(chapter.title)}</div>
+                                <div class="chapter-content">${escapeHtml(chapter.content)}</div>
+                            </div>
+                        `).join('');
+                    } else {
+                        chaptersHtml = '<p style="color: #666;">まだ章が投稿されていません。</p>';
+                    }
+                    
+                    detailDiv.innerHTML = `
+                        <h2>${escapeHtml(novel.title)}</h2>
+                        <p style="color: #666; margin-bottom: 10px;">著者: ${escapeHtml(novel.author_name)}</p>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                            <strong>あらすじ：</strong><br>
+                            ${escapeHtml(novel.description)}
+                        </div>
+                        <div class="chapter-section">
+                            <h3>章一覧</h3>
+                            ${chaptersHtml}
+                        </div>
+                    `;
+                    
+                    // 一覧を非表示にして詳細を表示
+                    document.getElementById('list-tab').style.display = 'none';
+                    document.getElementById('create-tab').style.display = 'none';
+                    document.getElementById('novel-detail').style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showMessage('小説の詳細取得に失敗しました', 'error');
+                });
+        }
+
+        // 詳細を閉じる
+        function closeDetail() {
+            document.getElementById('novel-detail').style.display = 'none';
+            document.getElementById('list-tab').style.display = 'block';
+            switchTab('list');
+        }
+
+        // 小説を作成
+        function createNovel(event) {
+            event.preventDefault();
+            
+            const data = {
+                title: document.getElementById('title').value,
+                author_name: document.getElementById('author').value || 'kerok',
+                description: document.getElementById('description').value
+            };
+            
+            fetch('/api/novels', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(novel => {
+                showMessage('小説を投稿しました！', 'success');
+                document.getElementById('title').value = '';
+                document.getElementById('author').value = '';
+                document.getElementById('description').value = '';
+                loadNovelSelect();
+                switchTab('list');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('投稿に失敗しました', 'error');
+            });
+        }
+
+        // 章を追加
+        function addChapter(event) {
+            event.preventDefault();
+            
+            const novelId = document.getElementById('novel-select').value;
+            const data = {
+                chapter_number: parseInt(document.getElementById('chapter-number').value),
+                title: document.getElementById('chapter-title').value,
+                content: document.getElementById('chapter-content').value
+            };
+            
+            fetch(`/api/novels/${novelId}/chapters`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(chapter => {
+                showMessage('章を追加しました！', 'success');
+                document.getElementById('chapter-number').value = '';
+                document.getElementById('chapter-title').value = '';
+                document.getElementById('chapter-content').value = '';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('章の追加に失敗しました', 'error');
+            });
+        }
+
+        // 小説選択用のセレクトボックスを更新
+        function loadNovelSelect() {
+            fetch('/api/novels')
+                .then(response => response.json())
+                .then(novels => {
+                    const select = document.getElementById('novel-select');
+                    select.innerHTML = '<option value="">-- 小説を選択してください --</option>' +
+                        novels.map(novel => `
+                            <option value="${novel.id}">${escapeHtml(novel.title)}</option>
+                        `).join('');
+                });
+        }
+
+        // メッセージ表示
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `<div class="message ${type}">${text}</div>`;
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 3000);
+        }
+
+        // HTMLエスケープ
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>

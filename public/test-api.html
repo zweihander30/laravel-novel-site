@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>API連携テスト</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 40px;
+            background-color: #f5f5f5;
+        }
+        h1 { color: #333; }
+        .user-card { 
+            background: white;
+            border: 1px solid #ddd; 
+            padding: 15px; 
+            margin: 10px 0; 
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button { 
+            padding: 10px 20px; 
+            margin: 10px 5px; 
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #result {
+            margin-top: 20px;
+        }
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>Laravel API連携デモ 🚀</h1>
+    
+    <div>
+        <button onclick="loadUsers()">ユーザー一覧を取得</button>
+        <button onclick="loadUser(1)">田中太郎を取得</button>
+        <button onclick="loadUser(2)">鈴木花子を取得</button>
+        <button onclick="clearResult()">クリア</button>
+    </div>
+    
+    <div id="result"></div>
+
+    <script>
+        function loadUsers() {
+            document.getElementById('result').innerHTML = '<p class="loading">読み込み中...</p>';
+            
+            fetch('/api/users')
+                .then(response => response.json())
+                .then(data => {
+                    let html = '<h2>ユーザー一覧</h2>';
+                    data.forEach(user => {
+                        html += `<div class="user-card">
+                            <strong>ID:</strong> ${user.id}<br>
+                            <strong>名前:</strong> ${user.name}<br>
+                            <strong>Email:</strong> ${user.email}
+                        </div>`;
+                    });
+                    document.getElementById('result').innerHTML = html;
+                })
+                .catch(error => {
+                    document.getElementById('result').innerHTML = 
+                        '<p style="color: red;">エラーが発生しました: ' + error + '</p>';
+                });
+        }
+
+        function loadUser(id) {
+            document.getElementById('result').innerHTML = '<p class="loading">読み込み中...</p>';
+            
+            fetch(`/api/users/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+                    let html = '<h2>ユーザー詳細</h2>';
+                    html += `<div class="user-card">
+                        <strong>ID:</strong> ${data.id}<br>
+                        <strong>名前:</strong> ${data.name}<br>
+                        <strong>Email:</strong> ${data.email}
+                    </div>`;
+                    document.getElementById('result').innerHTML = html;
+                })
+                .catch(error => {
+                    document.getElementById('result').innerHTML = 
+                        '<p style="color: red;">エラー: ' + error.message + '</p>';
+                });
+        }
+
+        function clearResult() {
+            document.getElementById('result').innerHTML = '';
+        }
+
+        // ページ読み込み時にメッセージ表示
+        window.onload = function() {
+            document.getElementById('result').innerHTML = 
+                '<p>上のボタンをクリックしてAPIからデータを取得してみてください！</p>';
+        }
+    </script>
+</body>
+</html>
