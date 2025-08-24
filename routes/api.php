@@ -36,3 +36,7 @@ Route::get('/novels', [App\Http\Controllers\NovelController::class, 'index']);
 Route::post('/novels', [App\Http\Controllers\NovelController::class, 'store']);
 Route::get('/novels/{id}', [App\Http\Controllers\NovelController::class, 'show']);
 Route::post('/novels/{id}/chapters', [App\Http\Controllers\NovelController::class, 'addChapter']);
+
+// 反応機能のルート
+Route::post('/novels/{id}/reactions', [App\Http\Controllers\ReactionController::class, 'toggle']);
+Route::get('/novels/{id}/reactions/stats', [App\Http\Controllers\ReactionController::class, 'stats']);

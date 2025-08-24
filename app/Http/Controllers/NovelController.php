@@ -11,7 +11,15 @@ class NovelController extends Controller
     // 小説一覧を取得
     public function index()
     {
-        $novels = Novel::withCount('chapters')->get();
+        $novels = Novel::withCount('chapters')
+            ->withCount(['reactions as likes_count' => function($query){
+                $query->where('type', 'like');
+            }])
+            ->withCount(['reactions as favorites_count' => function($query){
+                $query->where('type', 'favorite');
+            }])
+            ->get();
+
         return response()->json($novels);
     }
 
@@ -30,7 +38,18 @@ class NovelController extends Controller
     // 特定の小説を取得（章も含む）
     public function show($id)
     {
-        $novel = Novel::with('chapters')->findOrFail($id);
+        $novel = Novel::with('chapters')
+            ->withCount(['reactions as likes_count' => function($query){
+                $query->where('type', 'like');
+            }])
+            ->withCount(['reactions as favorites_count' => function($query){
+                $query->where('type', 'favorite');
+            }])
+            ->findOrFail($id);
+
+        // 各反応タイプの詳細な数を取得.
+        $novel->reaction_counts = $novel->getReactionCounts();
+
         return response()->json($novel);
     }
 
