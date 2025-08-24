@@ -12,14 +12,14 @@ class ReactionController extends Controller
     public function toggle(Request $request, $novelId)
     {
         $request->validate([
-            'type' => 'required|in:like,favotite,amazing,want_to_read',
+            'type' => 'required|in:like,favorite,amazing,want_to_read',
             'user_identifier' => 'required|string'
         ]);
 
         $novel = Novel::findOrFail($novelId);
 
         $existing = Reaction::where('novel_id', $novelId)
-            ->where('user_indentifier', $request->user_identifier)
+            ->where('user_identifier', $request->user_identifier)
             ->where('type', $request->type)
             ->first();
 

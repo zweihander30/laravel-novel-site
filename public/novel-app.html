@@ -101,6 +101,7 @@
             border-radius: 8px;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
         }
         
         .novel-item:hover {
@@ -124,8 +125,65 @@
         .novel-meta {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             color: #888;
             font-size: 0.9em;
+        }
+        
+        /* 反応ボタンのスタイル */
+        .reactions-container {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .reaction-button {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 16px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .reaction-button:hover {
+            transform: scale(1.05);
+            border-color: #667eea;
+        }
+        
+        .reaction-button.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .reaction-button .emoji {
+            font-size: 20px;
+        }
+        
+        .reaction-button .count {
+            font-weight: bold;
+        }
+        
+        .reaction-stats {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .reaction-stat {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            padding: 4px 8px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 12px;
+            font-size: 12px;
         }
         
         .chapter-section {
@@ -206,6 +264,28 @@
         .tab-content.active {
             display: block;
         }
+        
+        /* ランキング表示用 */
+        .ranking-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: gold;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .ranking-badge.silver {
+            background: silver;
+        }
+        
+        .ranking-badge.bronze {
+            background: #cd7f32;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -217,6 +297,7 @@
         <div class="tabs">
             <div class="tab active" onclick="switchTab('list')">小説一覧</div>
             <div class="tab" onclick="switchTab('create')">新規投稿</div>
+            <div class="tab" onclick="switchTab('ranking')">ランキング</div>
         </div>
         
         <!-- 小説一覧タブ -->
@@ -277,6 +358,16 @@
             </div>
         </div>
         
+        <!-- ランキングタブ -->
+        <div id="ranking-tab" class="tab-content">
+            <div class="card">
+                <h2>🏆 人気ランキング</h2>
+                <div id="ranking-list" class="novel-list">
+                    <div class="loading">読み込み中...</div>
+                </div>
+            </div>
+        </div>
+        
         <!-- 小説詳細表示（モーダル的に使用） -->
         <div id="novel-detail" style="display: none;">
             <div class="card">
@@ -287,10 +378,39 @@
     </div>
 
     <script>
+        // ユーザー識別子（本来は認証システムから取得）
+        const getUserIdentifier = () => {
+            let id = localStorage.getItem('user_identifier');
+            if (!id) {
+                id = 'user_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('user_identifier', id);
+            }
+            return id;
+        };
+        
+        const userIdentifier = getUserIdentifier();
+        
+        // ユーザーの反応を記録
+        let userReactions = {};
+        
         // ページ読み込み時に小説一覧を取得
         window.onload = function() {
             loadNovels();
+            loadUserReactions();
         };
+        
+        // ユーザーの反応をローカルストレージから読み込み
+        function loadUserReactions() {
+            const stored = localStorage.getItem('user_reactions');
+            if (stored) {
+                userReactions = JSON.parse(stored);
+            }
+        }
+        
+        // ユーザーの反応を保存
+        function saveUserReactions() {
+            localStorage.setItem('user_reactions', JSON.stringify(userReactions));
+        }
 
         // タブ切り替え
         function switchTab(tabName) {
@@ -307,6 +427,10 @@
                 document.querySelectorAll('.tab')[1].classList.add('active');
                 document.getElementById('create-tab').classList.add('active');
                 loadNovelSelect();
+            } else if (tabName === 'ranking') {
+                document.querySelectorAll('.tab')[2].classList.add('active');
+                document.getElementById('ranking-tab').classList.add('active');
+                loadRanking();
             }
         }
 
@@ -328,7 +452,11 @@
                             <div class="novel-description">${escapeHtml(novel.description)}</div>
                             <div class="novel-meta">
                                 <span>著者: ${escapeHtml(novel.author_name)}</span>
-                                <span>章数: ${novel.chapters_count || 0}</span>
+                                <div class="reaction-stats">
+                                    ${novel.likes_count > 0 ? `<span class="reaction-stat">👍 ${novel.likes_count}</span>` : ''}
+                                    ${novel.favorites_count > 0 ? `<span class="reaction-stat">❤️ ${novel.favorites_count}</span>` : ''}
+                                    <span class="reaction-stat">📚 ${novel.chapters_count || 0}章</span>
+                                </div>
                             </div>
                         </div>
                     `).join('');
@@ -338,6 +466,50 @@
                     showMessage('小説の取得に失敗しました', 'error');
                 });
         }
+        
+        // ランキングを表示
+        function loadRanking() {
+            fetch('/api/novels')
+                .then(response => response.json())
+                .then(novels => {
+                    // いいね数でソート
+                    novels.sort((a, b) => (b.likes_count || 0) - (a.likes_count || 0));
+                    
+                    const rankingDiv = document.getElementById('ranking-list');
+                    
+                    if (novels.length === 0) {
+                        rankingDiv.innerHTML = '<p style="text-align: center; color: #666;">まだ小説が投稿されていません。</p>';
+                        return;
+                    }
+                    
+                    rankingDiv.innerHTML = novels.map((novel, index) => {
+                        let badge = '';
+                        if (index === 0 && novel.likes_count > 0) badge = '<div class="ranking-badge">🥇 1位</div>';
+                        else if (index === 1 && novel.likes_count > 0) badge = '<div class="ranking-badge silver">🥈 2位</div>';
+                        else if (index === 2 && novel.likes_count > 0) badge = '<div class="ranking-badge bronze">🥉 3位</div>';
+                        
+                        return `
+                            <div class="novel-item" onclick="showNovelDetail(${novel.id})">
+                                ${badge}
+                                <div class="novel-title">${escapeHtml(novel.title)}</div>
+                                <div class="novel-description">${escapeHtml(novel.description)}</div>
+                                <div class="novel-meta">
+                                    <span>著者: ${escapeHtml(novel.author_name)}</span>
+                                    <div class="reaction-stats">
+                                        <span class="reaction-stat">👍 ${novel.likes_count || 0}</span>
+                                        <span class="reaction-stat">❤️ ${novel.favorites_count || 0}</span>
+                                        <span class="reaction-stat">📚 ${novel.chapters_count || 0}章</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showMessage('ランキングの取得に失敗しました', 'error');
+                });
+        }
 
         // 小説の詳細を表示
         function showNovelDetail(novelId) {
@@ -345,6 +517,28 @@
                 .then(response => response.json())
                 .then(novel => {
                     const detailDiv = document.getElementById('detail-content');
+                    
+                    // 反応ボタンの作成
+                    const reactions = [
+                        { type: 'like', emoji: '👍', label: 'いいね' },
+                        { type: 'favorite', emoji: '❤️', label: 'お気に入り' },
+                        { type: 'amazing', emoji: '😮', label: 'すごい' },
+                        { type: 'want_to_read', emoji: '📖', label: '読みたい' }
+                    ];
+                    
+                    const reactionButtons = reactions.map(r => {
+                        const count = novel.reaction_counts && novel.reaction_counts[r.type] ? novel.reaction_counts[r.type] : 0;
+                        const isActive = userReactions[novelId] && userReactions[novelId][r.type];
+                        
+                        return `
+                            <button class="reaction-button ${isActive ? 'active' : ''}" 
+                                    onclick="toggleReaction(${novelId}, '${r.type}', this)">
+                                <span class="emoji">${r.emoji}</span>
+                                <span class="label">${r.label}</span>
+                                <span class="count">${count}</span>
+                            </button>
+                        `;
+                    }).join('');
                     
                     let chaptersHtml = '';
                     if (novel.chapters && novel.chapters.length > 0) {
@@ -365,6 +559,9 @@
                             <strong>あらすじ：</strong><br>
                             ${escapeHtml(novel.description)}
                         </div>
+                        <div class="reactions-container">
+                            ${reactionButtons}
+                        </div>
                         <div class="chapter-section">
                             <h3>章一覧</h3>
                             ${chaptersHtml}
@@ -374,12 +571,58 @@
                     // 一覧を非表示にして詳細を表示
                     document.getElementById('list-tab').style.display = 'none';
                     document.getElementById('create-tab').style.display = 'none';
+                    document.getElementById('ranking-tab').style.display = 'none';
                     document.getElementById('novel-detail').style.display = 'block';
                 })
                 .catch(error => {
                     console.error('Error:', error);
                     showMessage('小説の詳細取得に失敗しました', 'error');
                 });
+        }
+        
+        // 反応をトグル
+        function toggleReaction(novelId, type, button) {
+            fetch(`/api/novels/${novelId}/reactions`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    type: type,
+                    user_identifier: userIdentifier
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // ボタンの状態を更新
+                if (data.action === 'added') {
+                    button.classList.add('active');
+                    if (!userReactions[novelId]) userReactions[novelId] = {};
+                    userReactions[novelId][type] = true;
+                } else {
+                    button.classList.remove('active');
+                    if (userReactions[novelId]) {
+                        delete userReactions[novelId][type];
+                    }
+                }
+                
+                // カウントを更新
+                const countSpan = button.querySelector('.count');
+                countSpan.textContent = data.counts[type] || 0;
+                
+                // ローカルストレージに保存
+                saveUserReactions();
+                
+                // アニメーション効果
+                button.style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    button.style.transform = 'scale(1)';
+                }, 200);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('反応の更新に失敗しました', 'error');
+            });
         }
 
         // 詳細を閉じる
