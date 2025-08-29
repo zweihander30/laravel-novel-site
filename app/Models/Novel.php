@@ -31,4 +31,14 @@ class Novel extends Model
             ->groupBy('type')
             ->pluck('count', 'type');
     }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function rootComments(): HasMany
+    {
+        return $this->hasMany(Comment::class)->whereNull('parent_id')->orderBy('created_at', 'desc');
+    }
 }

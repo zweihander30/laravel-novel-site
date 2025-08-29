@@ -40,3 +40,9 @@ Route::post('/novels/{id}/chapters', [App\Http\Controllers\NovelController::clas
 // 反応機能のルート
 Route::post('/novels/{id}/reactions', [App\Http\Controllers\ReactionController::class, 'toggle']);
 Route::get('/novels/{id}/reactions/stats', [App\Http\Controllers\ReactionController::class, 'stats']);
+
+// コメント機能のルート
+Route::get('/novels/{id}/comments', [App\Http\Controllers\CommentController::class, 'index']);
+Route::post('/novels/{id}/comments', [App\Http\Controllers\CommentController::class, 'store']);
+Route::delete('/novels/{novelId}/comments/{commentId}', [App\Http\Controllers\CommentController::class, 'destory']);
+Route::get('/novels/{id}/comments/popular', [App\Http\Controllers\CommentController::class, 'popular']);

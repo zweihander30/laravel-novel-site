@@ -211,6 +211,172 @@
             white-space: pre-wrap;
         }
         
+        /* コメントセクション */
+        .comments-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+        
+        .comments-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .comment-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .comment-form {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .comment-form input,
+        .comment-form textarea {
+            margin-bottom: 10px;
+        }
+        
+        .comment-form button {
+            padding: 8px 20px;
+            font-size: 14px;
+        }
+        
+        .comments-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .comment {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #e0e0e0;
+            transition: box-shadow 0.2s;
+        }
+        
+        .comment:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .comment-author {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .comment-time {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .comment-content {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        .comment-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .comment-action {
+            padding: 4px 10px;
+            background: none;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .comment-action:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .comment-replies {
+            margin-left: 30px;
+            margin-top: 15px;
+            padding-left: 15px;
+            border-left: 2px solid #e0e0e0;
+        }
+        
+        .reply-form {
+            background: #fafafa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .reply-form textarea {
+            margin-bottom: 10px;
+            min-height: 60px;
+        }
+        
+        .reply-form-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .reply-form button {
+            padding: 6px 15px;
+            font-size: 13px;
+        }
+        
+        .cancel-button {
+            background: #6c757d;
+        }
+        
+        .delete-button {
+            background: #dc3545;
+            padding: 4px 10px;
+            font-size: 12px;
+        }
+        
+        .deleted-comment {
+            opacity: 0.6;
+            font-style: italic;
+        }
+        
+        .popular-comments {
+            background: #fff9e6;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #ffd700;
+        }
+        
+        .popular-comment-badge {
+            background: gold;
+            color: #333;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
         .message {
             padding: 15px;
             border-radius: 8px;
@@ -390,8 +556,19 @@
         
         const userIdentifier = getUserIdentifier();
         
+        // ユーザー名を取得・設定
+        const getUserName = () => {
+            let name = localStorage.getItem('user_name');
+            if (!name) {
+                name = prompt('コメント時に使用する名前を入力してください：') || '名無しさん';
+                localStorage.setItem('user_name', name);
+            }
+            return name;
+        };
+        
         // ユーザーの反応を記録
         let userReactions = {};
+        let currentNovelId = null;
         
         // ページ読み込み時に小説一覧を取得
         window.onload = function() {
@@ -513,6 +690,8 @@
 
         // 小説の詳細を表示
         function showNovelDetail(novelId) {
+            currentNovelId = novelId;
+            
             fetch(`/api/novels/${novelId}`)
                 .then(response => response.json())
                 .then(novel => {
@@ -566,6 +745,24 @@
                             <h3>章一覧</h3>
                             ${chaptersHtml}
                         </div>
+                        <div class="comments-section">
+                            <div class="comments-header">
+                                <h3>💬 コメント</h3>
+                                <div class="comment-stats">
+                                    <span id="total-comments">0件のコメント</span>
+                                    <span id="unique-commenters">0人が参加</span>
+                                </div>
+                            </div>
+                            <div class="comment-form">
+                                <input type="text" id="comment-name" placeholder="名前" value="${escapeHtml(getUserName())}">
+                                <textarea id="comment-content" placeholder="コメントを入力..." rows="3"></textarea>
+                                <button onclick="postComment(${novelId})">コメントを投稿</button>
+                            </div>
+                            <div id="popular-comments"></div>
+                            <div id="comments-list" class="comments-list">
+                                <div class="loading">コメントを読み込み中...</div>
+                            </div>
+                        </div>
                     `;
                     
                     // 一覧を非表示にして詳細を表示
@@ -573,11 +770,238 @@
                     document.getElementById('create-tab').style.display = 'none';
                     document.getElementById('ranking-tab').style.display = 'none';
                     document.getElementById('novel-detail').style.display = 'block';
+                    
+                    // コメントを読み込む
+                    loadComments(novelId);
+                    loadPopularComments(novelId);
                 })
                 .catch(error => {
                     console.error('Error:', error);
                     showMessage('小説の詳細取得に失敗しました', 'error');
                 });
+        }
+        
+        // コメントを読み込む
+        function loadComments(novelId) {
+            fetch(`/api/novels/${novelId}/comments`)
+                .then(response => response.json())
+                .then(data => {
+                    // 統計情報を更新
+                    document.getElementById('total-comments').textContent = `${data.stats.total_comments}件のコメント`;
+                    document.getElementById('unique-commenters').textContent = `${data.stats.unique_commenters}人が参加`;
+                    
+                    // コメント一覧を表示
+                    const commentsList = document.getElementById('comments-list');
+                    if (data.comments.data.length === 0) {
+                        commentsList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">まだコメントがありません。最初のコメントを投稿してみましょう！</p>';
+                        return;
+                    }
+                    
+                    commentsList.innerHTML = data.comments.data.map(comment => renderComment(comment)).join('');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('comments-list').innerHTML = '<p style="color: red;">コメントの読み込みに失敗しました</p>';
+                });
+        }
+        
+        // 人気のコメントを読み込む
+        function loadPopularComments(novelId) {
+            fetch(`/api/novels/${novelId}/comments/popular`)
+                .then(response => response.json())
+                .then(comments => {
+                    const popularDiv = document.getElementById('popular-comments');
+                    if (comments.length > 0) {
+                        popularDiv.innerHTML = `
+                            <div class="popular-comments">
+                                <h4>🔥 話題のコメント</h4>
+                                ${comments.map(comment => `
+                                    <div class="comment" style="margin: 10px 0;">
+                                        <div class="comment-header">
+                                            <span class="comment-author">${escapeHtml(comment.user_name)}
+                                                <span class="popular-comment-badge">返信 ${comment.replies_count}件</span>
+                                            </span>
+                                            <span class="comment-time">${formatDate(comment.created_at)}</span>
+                                        </div>
+                                        <div class="comment-content">${escapeHtml(comment.content)}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => console.error('Error loading popular comments:', error));
+        }
+        
+        // コメントを描画
+        function renderComment(comment, depth = 0) {
+            const isOwner = comment.user_identifier === userIdentifier;
+            const isDeleted = comment.user_name === '[削除済み]';
+            
+            let html = `
+                <div class="comment ${isDeleted ? 'deleted-comment' : ''}" data-comment-id="${comment.id}">
+                    <div class="comment-header">
+                        <span class="comment-author">${escapeHtml(comment.user_name)}</span>
+                        <span class="comment-time">${formatDate(comment.created_at)}</span>
+                    </div>
+                    <div class="comment-content">${escapeHtml(comment.content)}</div>
+                    <div class="comment-actions">
+                        ${depth < 3 && !isDeleted ? `<button class="comment-action" onclick="showReplyForm(${comment.id})">返信</button>` : ''}
+                        ${isOwner && !isDeleted ? `<button class="delete-button" onclick="deleteComment(${currentNovelId}, ${comment.id})">削除</button>` : ''}
+                    </div>
+                    <div id="reply-form-${comment.id}"></div>
+                    ${comment.replies && comment.replies.length > 0 ? `
+                        <div class="comment-replies">
+                            ${comment.replies.map(reply => renderComment(reply, depth + 1)).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            return html;
+        }
+        
+        // 返信フォームを表示
+        function showReplyForm(parentId) {
+            const formDiv = document.getElementById(`reply-form-${parentId}`);
+            
+            if (formDiv.innerHTML) {
+                formDiv.innerHTML = '';
+                return;
+            }
+            
+            formDiv.innerHTML = `
+                <div class="reply-form">
+                    <input type="text" id="reply-name-${parentId}" placeholder="名前" value="${escapeHtml(getUserName())}">
+                    <textarea id="reply-content-${parentId}" placeholder="返信を入力..." rows="2"></textarea>
+                    <div class="reply-form-buttons">
+                        <button onclick="postReply(${currentNovelId}, ${parentId})">返信する</button>
+                        <button class="cancel-button" onclick="hideReplyForm(${parentId})">キャンセル</button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById(`reply-content-${parentId}`).focus();
+        }
+        
+        // 返信フォームを隠す
+        function hideReplyForm(parentId) {
+            document.getElementById(`reply-form-${parentId}`).innerHTML = '';
+        }
+        
+        // コメントを投稿
+        function postComment(novelId, parentId = null) {
+            const nameInput = parentId ? 
+                document.getElementById(`reply-name-${parentId}`) : 
+                document.getElementById('comment-name');
+            const contentInput = parentId ? 
+                document.getElementById(`reply-content-${parentId}`) : 
+                document.getElementById('comment-content');
+            
+            const name = nameInput.value.trim() || '名無しさん';
+            const content = contentInput.value.trim();
+            
+            if (!content) {
+                showMessage('コメント内容を入力してください', 'error');
+                return;
+            }
+            
+            // 名前を保存
+            localStorage.setItem('user_name', name);
+            
+            fetch(`/api/novels/${novelId}/comments`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_name: name,
+                    user_identifier: userIdentifier,
+                    content: content,
+                    parent_id: parentId
+                })
+            })
+            .then(response => response.json())
+            .then(comment => {
+                if (comment.error) {
+                    showMessage(comment.error, 'error');
+                    return;
+                }
+                
+                // フォームをクリア
+                contentInput.value = '';
+                
+                if (parentId) {
+                    hideReplyForm(parentId);
+                }
+                
+                // コメントを再読み込み
+                loadComments(novelId);
+                showMessage('コメントを投稿しました', 'success');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('コメントの投稿に失敗しました', 'error');
+            });
+        }
+        
+        // 返信を投稿
+        function postReply(novelId, parentId) {
+            postComment(novelId, parentId);
+        }
+        
+        // コメントを削除
+        function deleteComment(novelId, commentId) {
+            if (!confirm('このコメントを削除しますか？')) {
+                return;
+            }
+            
+            fetch(`/api/novels/${novelId}/comments/${commentId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_identifier: userIdentifier
+                })
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.error) {
+                    showMessage(result.error, 'error');
+                    return;
+                }
+                
+                loadComments(novelId);
+                showMessage(result.message, 'success');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('コメントの削除に失敗しました', 'error');
+            });
+        }
+        
+        // 日付フォーマット
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = now - date;
+            const seconds = Math.floor(diff / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            
+            if (seconds < 60) {
+                return 'たった今';
+            } else if (minutes < 60) {
+                return `${minutes}分前`;
+            } else if (hours < 24) {
+                return `${hours}時間前`;
+            } else if (days < 7) {
+                return `${days}日前`;
+            } else {
+                return date.toLocaleDateString('ja-JP');
+            }
         }
         
         // 反応をトグル
