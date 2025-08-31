@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Novel;
 use App\Models\Chapter;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreNovelRequest;
+use App\Http\Requests\StoreChapterRequest;
+use Illuminate\Http\Jsonresponse;
 
 class NovelController extends Controller
 {
@@ -18,25 +20,25 @@ class NovelController extends Controller
             ->withCount(['reactions as favorites_count' => function($query){
                 $query->where('type', 'favorite');
             }])
+            ->latest()
             ->get();
 
         return response()->json($novels);
     }
 
     // 小説を作成
-    public function store(Request $request)
+    public function store(StoreNovelRequest $request): JsonResponse
     {
-        $novel = Novel::create([
-            'title' => $request->title,
-            'description' => $request->description,
-            'author_name' => $request->author_name ?? 'kerok'
-        ]);
+        // バリデーション済みのデータを取得.
+        $validated = $request->validated();
+
+        $novel = Novel::create($validated);
         
         return response()->json($novel, 201);
     }
 
     // 特定の小説を取得（章も含む）
-    public function show($id)
+    public function show($id): JsonResponse
     {
         $novel = Novel::with('chapters')
             ->withCount(['reactions as likes_count' => function($query){
@@ -54,16 +56,11 @@ class NovelController extends Controller
     }
 
     // 章を追加
-    public function addChapter(Request $request, $novelId)
+    public function addChapter(StoreChapterRequest $request, $novelId): JsonResponse
     {
         $novel = Novel::findOrFail($novelId);
         
-        $chapter = Chapter::create([
-            'novel_id' => $novelId,
-            'chapter_number' => $request->chapter_number,
-            'title' => $request->title,
-            'content' => $request->content
-        ]);
+        $chapter = $novel->chapters()->create($request->validated());
         
         return response()->json($chapter, 201);
     }
