@@ -2,74 +2,78 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Novel;
-use App\Models\Chapter;
 use App\Http\Requests\StoreNovelRequest;
 use App\Http\Requests\StoreChapterRequest;
 use App\Http\Resources\NovelResource;
 use App\Http\Resources\NovelCollection;
 use App\Http\Resources\ChapterResource;
+use App\Services\Novel\NovelService;
 use Illuminate\Http\JsonResponse;
 
 class NovelController extends Controller
 {
-    // 小説一覧を取得
+    private NovelService $novelService;
+
+    public function __construct(NovelService $novelService)
+    {
+        $this->novelService = $novelService;
+    }
+
+    /**
+     * 小説一覧を取得
+     */
     public function index(): NovelCollection
     {
-        $novels = Novel::withCount('chapters')
-            ->withCount([
-                'reactions as likes_count' => function ($query) {
-                    $query->where('type', 'like');
-                }
-            ])
-            ->withCount([
-                'reactions as favorites_count' => function ($query) {
-                    $query->where('type', 'favorite');
-                }
-            ])
-            ->latest()
-            ->get();
-
+        $novels = $this->novelService->getAllWithStats();
         return new NovelCollection($novels);
     }
 
-    // 小説を作成
+    /**
+     * 小説を作成
+     */
     public function store(StoreNovelRequest $request): JsonResponse
     {
-        // バリデーション済みのデータを取得.
-        $novel = Novel::create($request->validated());
-        return (new NovelResource($novel))->response()->setStatusCode(201);
+        try {
+            $novel = $this->novelService->create($request->validated());
+            
+            return (new NovelResource($novel))
+                ->response()
+                ->setStatusCode(201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 400);
+        }
     }
 
-    // 特定の小説を取得（章も含む）
+    /**
+     * 特定の小説を取得
+     */
     public function show($id): NovelResource
     {
-        $novel = Novel::with('chapters')
-            ->withCount([
-                'reactions as likes_count' => function ($query) {
-                    $query->where('type', 'like');
-                }
-            ])
-            ->withCount([
-                'reactions as favorites_count' => function ($query) {
-                    $query->where('type', 'favorite');
-                }
-            ])
-            ->findOrFail($id);
-
-        // 各反応タイプの詳細な数を取得.
-        $novel->reaction_counts = $novel->getReactionCounts();
-
+        $novel = $this->novelService->getWithDetails($id);
         return new NovelResource($novel);
     }
 
-    // 章を追加
+    /**
+     * 章を追加
+     */
     public function addChapter(StoreChapterRequest $request, $novelId): JsonResponse
     {
-        $novel = Novel::findOrFail($novelId);
-
-        $chapter = $novel->chapters()->create($request->validated());
-
-        return (new ChapterResource($chapter))->response()->setStatusCode(201);
+        try {
+            $chapter = $this->novelService->addChapter($novelId, $request->validated());
+            
+            return (new ChapterResource($chapter))
+                ->response()
+                ->setStatusCode(201);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 400);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => '章の追加に失敗しました'
+            ], 500);
+        }
     }
 }
