@@ -12,7 +12,7 @@ class StoreNovelRequest extends FormRequest
     public function authorize(): bool
     {
         // 今は認証なしなので常にtrue
-        return false;
+        return true;
     }
 
     /**

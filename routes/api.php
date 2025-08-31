@@ -39,7 +39,7 @@ Route::get('/user', function (Request $request) {
 // Route::post('/novels/{id}/chapters', [App\Http\Controllers\NovelController::class, 'addChapter']);
 
 Route::get('/novels', [NovelController::class, 'index'])->name('novels.index');
-Route::post('/novels', [NovelController::class, 'index'])->name('novels.store');
+Route::post('/novels', [NovelController::class, 'store'])->name('novels.store');
 Route::get('/novels/{id}', [NovelController::class, 'show'])->name('novels.show');
 Route::post('/novels/{id}/chapters', [NovelController::class, 'addChapter'])->name('novels.chapters.store');
 

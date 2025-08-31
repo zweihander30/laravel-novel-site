@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Models;
+namespace App\Services\Novel;
 
 use App\Models\Novel;
 use App\Models\Chapter;
@@ -22,7 +22,7 @@ class NovelService
                 }
             ])
             ->withCount([
-                'reactions as favorite_count' => function ($query) {
+                'reactions as favorites_count' => function ($query) {
                     $query->where('type', 'favorite');
                 }
             ])
@@ -70,6 +70,7 @@ class NovelService
             $this->afterCreate($novel);
 
             DB::commit();
+            Log::debug('Novel created', ['novel_id' => $novel->id]);
             Log::info('Novel created', ['novel_id' => $novel->id]);
 
             return $novel;

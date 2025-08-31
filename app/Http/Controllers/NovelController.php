@@ -10,6 +10,9 @@ use App\Http\Resources\ChapterResource;
 use App\Services\Novel\NovelService;
 use Illuminate\Http\JsonResponse;
 
+use Illuminate\Support\Facades\Log;
+
+
 class NovelController extends Controller
 {
     private NovelService $novelService;
@@ -34,6 +37,7 @@ class NovelController extends Controller
     public function store(StoreNovelRequest $request): JsonResponse
     {
         try {
+            Log::debug('test1', [$request]);
             $novel = $this->novelService->create($request->validated());
             
             return (new NovelResource($novel))
