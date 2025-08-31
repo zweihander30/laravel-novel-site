@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,47 +11,48 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
-        
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
         }
-        
+
         h1 {
             color: white;
             text-align: center;
             margin-bottom: 30px;
             font-size: 2.5em;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
         }
-        
+
         .card {
             background: white;
             border-radius: 12px;
             padding: 25px;
             margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
-        
+
         .form-group {
             margin-bottom: 20px;
         }
-        
+
         label {
             display: block;
             margin-bottom: 8px;
             color: #333;
             font-weight: 600;
         }
-        
-        input, textarea {
+
+        input,
+        textarea {
             width: 100%;
             padding: 12px;
             border: 2px solid #e0e0e0;
@@ -58,17 +60,18 @@
             font-size: 16px;
             transition: border-color 0.3s;
         }
-        
-        input:focus, textarea:focus {
+
+        input:focus,
+        textarea:focus {
             outline: none;
             border-color: #667eea;
         }
-        
+
         textarea {
             resize: vertical;
             min-height: 100px;
         }
-        
+
         button {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -80,21 +83,21 @@
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
         }
-        
+
         button:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
-        
+
         button:active {
             transform: translateY(0);
         }
-        
+
         .novel-list {
             display: grid;
             gap: 20px;
         }
-        
+
         .novel-item {
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             padding: 20px;
@@ -103,25 +106,25 @@
             transition: transform 0.2s, box-shadow 0.2s;
             position: relative;
         }
-        
+
         .novel-item:hover {
             transform: translateX(5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-        
+
         .novel-title {
             font-size: 1.3em;
             font-weight: bold;
             color: #333;
             margin-bottom: 8px;
         }
-        
+
         .novel-description {
             color: #666;
             margin-bottom: 8px;
             line-height: 1.5;
         }
-        
+
         .novel-meta {
             display: flex;
             justify-content: space-between;
@@ -129,7 +132,7 @@
             color: #888;
             font-size: 0.9em;
         }
-        
+
         /* 反応ボタンのスタイル */
         .reactions-container {
             display: flex;
@@ -137,7 +140,7 @@
             margin: 20px 0;
             flex-wrap: wrap;
         }
-        
+
         .reaction-button {
             display: flex;
             align-items: center;
@@ -150,48 +153,48 @@
             transition: all 0.3s;
             font-size: 14px;
         }
-        
+
         .reaction-button:hover {
             transform: scale(1.05);
             border-color: #667eea;
         }
-        
+
         .reaction-button.active {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border-color: #667eea;
         }
-        
+
         .reaction-button .emoji {
             font-size: 20px;
         }
-        
+
         .reaction-button .count {
             font-weight: bold;
         }
-        
+
         .reaction-stats {
             display: flex;
             gap: 10px;
             align-items: center;
         }
-        
+
         .reaction-stat {
             display: flex;
             align-items: center;
             gap: 3px;
             padding: 4px 8px;
-            background: rgba(255,255,255,0.9);
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 12px;
             font-size: 12px;
         }
-        
+
         .chapter-section {
             margin-top: 30px;
             padding-top: 20px;
             border-top: 2px solid #e0e0e0;
         }
-        
+
         .chapter-item {
             background: #f8f9fa;
             padding: 15px;
@@ -199,61 +202,61 @@
             border-radius: 8px;
             border-left: 4px solid #667eea;
         }
-        
+
         .chapter-number {
             font-weight: bold;
             color: #667eea;
         }
-        
+
         .chapter-content {
             margin-top: 10px;
             line-height: 1.8;
             white-space: pre-wrap;
         }
-        
+
         /* コメントセクション */
         .comments-section {
             margin-top: 30px;
             padding-top: 20px;
             border-top: 2px solid #e0e0e0;
         }
-        
+
         .comments-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
         }
-        
+
         .comment-stats {
             display: flex;
             gap: 15px;
             font-size: 14px;
             color: #666;
         }
-        
+
         .comment-form {
             background: #f8f9fa;
             padding: 20px;
             border-radius: 8px;
             margin-bottom: 20px;
         }
-        
+
         .comment-form input,
         .comment-form textarea {
             margin-bottom: 10px;
         }
-        
+
         .comment-form button {
             padding: 8px 20px;
             font-size: 14px;
         }
-        
+
         .comments-list {
             max-height: 600px;
             overflow-y: auto;
         }
-        
+
         .comment {
             background: white;
             padding: 15px;
@@ -262,39 +265,39 @@
             border: 1px solid #e0e0e0;
             transition: box-shadow 0.2s;
         }
-        
+
         .comment:hover {
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
-        
+
         .comment-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
         }
-        
+
         .comment-author {
             font-weight: bold;
             color: #333;
         }
-        
+
         .comment-time {
             font-size: 12px;
             color: #999;
         }
-        
+
         .comment-content {
             color: #555;
             line-height: 1.6;
             margin-bottom: 10px;
         }
-        
+
         .comment-actions {
             display: flex;
             gap: 10px;
         }
-        
+
         .comment-action {
             padding: 4px 10px;
             background: none;
@@ -305,7 +308,7 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        
+
         .comment-action:hover {
             background: #667eea;
             color: white;
@@ -313,14 +316,14 @@
             transform: none;
             box-shadow: none;
         }
-        
+
         .comment-replies {
             margin-left: 30px;
             margin-top: 15px;
             padding-left: 15px;
             border-left: 2px solid #e0e0e0;
         }
-        
+
         .reply-form {
             background: #fafafa;
             padding: 15px;
@@ -328,37 +331,37 @@
             margin-top: 10px;
             margin-bottom: 10px;
         }
-        
+
         .reply-form textarea {
             margin-bottom: 10px;
             min-height: 60px;
         }
-        
+
         .reply-form-buttons {
             display: flex;
             gap: 10px;
         }
-        
+
         .reply-form button {
             padding: 6px 15px;
             font-size: 13px;
         }
-        
+
         .cancel-button {
             background: #6c757d;
         }
-        
+
         .delete-button {
             background: #dc3545;
             padding: 4px 10px;
             font-size: 12px;
         }
-        
+
         .deleted-comment {
             opacity: 0.6;
             font-style: italic;
         }
-        
+
         .popular-comments {
             background: #fff9e6;
             padding: 15px;
@@ -366,7 +369,7 @@
             margin-bottom: 20px;
             border: 1px solid #ffd700;
         }
-        
+
         .popular-comment-badge {
             background: gold;
             color: #333;
@@ -376,7 +379,7 @@
             font-weight: bold;
             margin-left: 10px;
         }
-        
+
         .message {
             padding: 15px;
             border-radius: 8px;
@@ -384,31 +387,31 @@
             text-align: center;
             font-weight: 600;
         }
-        
+
         .success {
             background: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;
         }
-        
+
         .error {
             background: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
-        
+
         .loading {
             text-align: center;
             color: #666;
             padding: 20px;
         }
-        
+
         .tabs {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
         }
-        
+
         .tab {
             padding: 10px 20px;
             background: white;
@@ -417,20 +420,20 @@
             cursor: pointer;
             transition: all 0.3s;
         }
-        
+
         .tab.active {
             background: #667eea;
             color: white;
         }
-        
+
         .tab-content {
             display: none;
         }
-        
+
         .tab-content.active {
             display: block;
         }
-        
+
         /* ランキング表示用 */
         .ranking-badge {
             position: absolute;
@@ -443,29 +446,30 @@
             font-weight: bold;
             font-size: 14px;
         }
-        
+
         .ranking-badge.silver {
             background: silver;
         }
-        
+
         .ranking-badge.bronze {
             background: #cd7f32;
             color: white;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>📚 小説投稿サイト</h1>
-        
+
         <div id="message"></div>
-        
+
         <div class="tabs">
             <div class="tab active" onclick="switchTab('list')">小説一覧</div>
             <div class="tab" onclick="switchTab('create')">新規投稿</div>
             <div class="tab" onclick="switchTab('ranking')">ランキング</div>
         </div>
-        
+
         <!-- 小説一覧タブ -->
         <div id="list-tab" class="tab-content active">
             <div class="card">
@@ -476,7 +480,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- 新規投稿タブ -->
         <div id="create-tab" class="tab-content">
             <div class="card">
@@ -497,13 +501,14 @@
                     <button type="submit">小説を投稿</button>
                 </form>
             </div>
-            
+
             <div class="card" style="margin-top: 20px;">
                 <h2>章を追加</h2>
                 <form onsubmit="addChapter(event)">
                     <div class="form-group">
                         <label for="novel-select">小説を選択</label>
-                        <select id="novel-select" required style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                        <select id="novel-select" required
+                            style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;">
                             <option value="">-- 小説を選択してください --</option>
                         </select>
                     </div>
@@ -517,13 +522,14 @@
                     </div>
                     <div class="form-group">
                         <label for="chapter-content">本文</label>
-                        <textarea id="chapter-content" required style="min-height: 200px;" placeholder="章の本文を入力してください..."></textarea>
+                        <textarea id="chapter-content" required style="min-height: 200px;"
+                            placeholder="章の本文を入力してください..."></textarea>
                     </div>
                     <button type="submit">章を追加</button>
                 </form>
             </div>
         </div>
-        
+
         <!-- ランキングタブ -->
         <div id="ranking-tab" class="tab-content">
             <div class="card">
@@ -533,7 +539,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- 小説詳細表示（モーダル的に使用） -->
         <div id="novel-detail" style="display: none;">
             <div class="card">
@@ -553,9 +559,9 @@
             }
             return id;
         };
-        
+
         const userIdentifier = getUserIdentifier();
-        
+
         // ユーザー名を取得・設定
         const getUserName = () => {
             let name = localStorage.getItem('user_name');
@@ -565,17 +571,17 @@
             }
             return name;
         };
-        
+
         // ユーザーの反応を記録
         let userReactions = {};
         let currentNovelId = null;
-        
+
         // ページ読み込み時に小説一覧を取得
-        window.onload = function() {
+        window.onload = function () {
             loadNovels();
             loadUserReactions();
         };
-        
+
         // ユーザーの反応をローカルストレージから読み込み
         function loadUserReactions() {
             const stored = localStorage.getItem('user_reactions');
@@ -583,7 +589,7 @@
                 userReactions = JSON.parse(stored);
             }
         }
-        
+
         // ユーザーの反応を保存
         function saveUserReactions() {
             localStorage.setItem('user_reactions', JSON.stringify(userReactions));
@@ -594,7 +600,7 @@
             // すべてのタブとコンテンツを非アクティブに
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            
+
             // 選択されたタブをアクティブに
             if (tabName === 'list') {
                 document.querySelectorAll('.tab')[0].classList.add('active');
@@ -615,35 +621,36 @@
         function loadNovels() {
             fetch('/api/novels')
                 .then(response => response.json())
-                .then(novels => {
+                .then(result => {
+                    const novels = result.data; // dataプロパティから取得
                     const listDiv = document.getElementById('novel-list');
-                    
+
                     if (novels.length === 0) {
                         listDiv.innerHTML = '<p style="text-align: center; color: #666;">まだ小説が投稿されていません。</p>';
                         return;
                     }
-                    
+
                     listDiv.innerHTML = novels.map(novel => `
-                        <div class="novel-item" onclick="showNovelDetail(${novel.id})">
-                            <div class="novel-title">${escapeHtml(novel.title)}</div>
-                            <div class="novel-description">${escapeHtml(novel.description)}</div>
-                            <div class="novel-meta">
-                                <span>著者: ${escapeHtml(novel.author_name)}</span>
-                                <div class="reaction-stats">
-                                    ${novel.likes_count > 0 ? `<span class="reaction-stat">👍 ${novel.likes_count}</span>` : ''}
-                                    ${novel.favorites_count > 0 ? `<span class="reaction-stat">❤️ ${novel.favorites_count}</span>` : ''}
-                                    <span class="reaction-stat">📚 ${novel.chapters_count || 0}章</span>
-                                </div>
-                            </div>
+                <div class="novel-item" onclick="showNovelDetail(${novel.id})">
+                    <div class="novel-title">${escapeHtml(novel.title)}</div>
+                    <div class="novel-description">${escapeHtml(novel.description)}</div>
+                    <div class="novel-meta">
+                        <span>著者: ${escapeHtml(novel.author_name)}</span>
+                        <div class="reaction-stats">
+                            ${novel.stats.likes_count > 0 ? `<span class="reaction-stat">👍 ${novel.stats.likes_count}</span>` : ''}
+                            ${novel.stats.favorites_count > 0 ? `<span class="reaction-stat">❤️ ${novel.stats.favorites_count}</span>` : ''}
+                            <span class="reaction-stat">📚 ${novel.stats.chapters_count}章</span>
                         </div>
-                    `).join('');
+                    </div>
+                </div>
+            `).join('');
                 })
                 .catch(error => {
                     console.error('Error:', error);
                     showMessage('小説の取得に失敗しました', 'error');
                 });
         }
-        
+
         // ランキングを表示
         function loadRanking() {
             fetch('/api/novels')
@@ -651,20 +658,20 @@
                 .then(novels => {
                     // いいね数でソート
                     novels.sort((a, b) => (b.likes_count || 0) - (a.likes_count || 0));
-                    
+
                     const rankingDiv = document.getElementById('ranking-list');
-                    
+
                     if (novels.length === 0) {
                         rankingDiv.innerHTML = '<p style="text-align: center; color: #666;">まだ小説が投稿されていません。</p>';
                         return;
                     }
-                    
+
                     rankingDiv.innerHTML = novels.map((novel, index) => {
                         let badge = '';
                         if (index === 0 && novel.likes_count > 0) badge = '<div class="ranking-badge">🥇 1位</div>';
                         else if (index === 1 && novel.likes_count > 0) badge = '<div class="ranking-badge silver">🥈 2位</div>';
                         else if (index === 2 && novel.likes_count > 0) badge = '<div class="ranking-badge bronze">🥉 3位</div>';
-                        
+
                         return `
                             <div class="novel-item" onclick="showNovelDetail(${novel.id})">
                                 ${badge}
@@ -691,12 +698,12 @@
         // 小説の詳細を表示
         function showNovelDetail(novelId) {
             currentNovelId = novelId;
-            
+
             fetch(`/api/novels/${novelId}`)
                 .then(response => response.json())
                 .then(novel => {
                     const detailDiv = document.getElementById('detail-content');
-                    
+
                     // 反応ボタンの作成
                     const reactions = [
                         { type: 'like', emoji: '👍', label: 'いいね' },
@@ -704,11 +711,11 @@
                         { type: 'amazing', emoji: '😮', label: 'すごい' },
                         { type: 'want_to_read', emoji: '📖', label: '読みたい' }
                     ];
-                    
+
                     const reactionButtons = reactions.map(r => {
                         const count = novel.reaction_counts && novel.reaction_counts[r.type] ? novel.reaction_counts[r.type] : 0;
                         const isActive = userReactions[novelId] && userReactions[novelId][r.type];
-                        
+
                         return `
                             <button class="reaction-button ${isActive ? 'active' : ''}" 
                                     onclick="toggleReaction(${novelId}, '${r.type}', this)">
@@ -718,7 +725,7 @@
                             </button>
                         `;
                     }).join('');
-                    
+
                     let chaptersHtml = '';
                     if (novel.chapters && novel.chapters.length > 0) {
                         chaptersHtml = novel.chapters.map(chapter => `
@@ -730,7 +737,7 @@
                     } else {
                         chaptersHtml = '<p style="color: #666;">まだ章が投稿されていません。</p>';
                     }
-                    
+
                     detailDiv.innerHTML = `
                         <h2>${escapeHtml(novel.title)}</h2>
                         <p style="color: #666; margin-bottom: 10px;">著者: ${escapeHtml(novel.author_name)}</p>
@@ -764,13 +771,13 @@
                             </div>
                         </div>
                     `;
-                    
+
                     // 一覧を非表示にして詳細を表示
                     document.getElementById('list-tab').style.display = 'none';
                     document.getElementById('create-tab').style.display = 'none';
                     document.getElementById('ranking-tab').style.display = 'none';
                     document.getElementById('novel-detail').style.display = 'block';
-                    
+
                     // コメントを読み込む
                     loadComments(novelId);
                     loadPopularComments(novelId);
@@ -780,7 +787,7 @@
                     showMessage('小説の詳細取得に失敗しました', 'error');
                 });
         }
-        
+
         // コメントを読み込む
         function loadComments(novelId) {
             fetch(`/api/novels/${novelId}/comments`)
@@ -789,14 +796,14 @@
                     // 統計情報を更新
                     document.getElementById('total-comments').textContent = `${data.stats.total_comments}件のコメント`;
                     document.getElementById('unique-commenters').textContent = `${data.stats.unique_commenters}人が参加`;
-                    
+
                     // コメント一覧を表示
                     const commentsList = document.getElementById('comments-list');
                     if (data.comments.data.length === 0) {
                         commentsList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">まだコメントがありません。最初のコメントを投稿してみましょう！</p>';
                         return;
                     }
-                    
+
                     commentsList.innerHTML = data.comments.data.map(comment => renderComment(comment)).join('');
                 })
                 .catch(error => {
@@ -804,7 +811,7 @@
                     document.getElementById('comments-list').innerHTML = '<p style="color: red;">コメントの読み込みに失敗しました</p>';
                 });
         }
-        
+
         // 人気のコメントを読み込む
         function loadPopularComments(novelId) {
             fetch(`/api/novels/${novelId}/comments/popular`)
@@ -832,12 +839,12 @@
                 })
                 .catch(error => console.error('Error loading popular comments:', error));
         }
-        
+
         // コメントを描画
         function renderComment(comment, depth = 0) {
             const isOwner = comment.user_identifier === userIdentifier;
             const isDeleted = comment.user_name === '[削除済み]';
-            
+
             let html = `
                 <div class="comment ${isDeleted ? 'deleted-comment' : ''}" data-comment-id="${comment.id}">
                     <div class="comment-header">
@@ -857,19 +864,19 @@
                     ` : ''}
                 </div>
             `;
-            
+
             return html;
         }
-        
+
         // 返信フォームを表示
         function showReplyForm(parentId) {
             const formDiv = document.getElementById(`reply-form-${parentId}`);
-            
+
             if (formDiv.innerHTML) {
                 formDiv.innerHTML = '';
                 return;
             }
-            
+
             formDiv.innerHTML = `
                 <div class="reply-form">
                     <input type="text" id="reply-name-${parentId}" placeholder="名前" value="${escapeHtml(getUserName())}">
@@ -880,35 +887,35 @@
                     </div>
                 </div>
             `;
-            
+
             document.getElementById(`reply-content-${parentId}`).focus();
         }
-        
+
         // 返信フォームを隠す
         function hideReplyForm(parentId) {
             document.getElementById(`reply-form-${parentId}`).innerHTML = '';
         }
-        
+
         // コメントを投稿
         function postComment(novelId, parentId = null) {
-            const nameInput = parentId ? 
-                document.getElementById(`reply-name-${parentId}`) : 
+            const nameInput = parentId ?
+                document.getElementById(`reply-name-${parentId}`) :
                 document.getElementById('comment-name');
-            const contentInput = parentId ? 
-                document.getElementById(`reply-content-${parentId}`) : 
+            const contentInput = parentId ?
+                document.getElementById(`reply-content-${parentId}`) :
                 document.getElementById('comment-content');
-            
+
             const name = nameInput.value.trim() || '名無しさん';
             const content = contentInput.value.trim();
-            
+
             if (!content) {
                 showMessage('コメント内容を入力してください', 'error');
                 return;
             }
-            
+
             // 名前を保存
             localStorage.setItem('user_name', name);
-            
+
             fetch(`/api/novels/${novelId}/comments`, {
                 method: 'POST',
                 headers: {
@@ -921,41 +928,41 @@
                     parent_id: parentId
                 })
             })
-            .then(response => response.json())
-            .then(comment => {
-                if (comment.error) {
-                    showMessage(comment.error, 'error');
-                    return;
-                }
-                
-                // フォームをクリア
-                contentInput.value = '';
-                
-                if (parentId) {
-                    hideReplyForm(parentId);
-                }
-                
-                // コメントを再読み込み
-                loadComments(novelId);
-                showMessage('コメントを投稿しました', 'success');
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showMessage('コメントの投稿に失敗しました', 'error');
-            });
+                .then(response => response.json())
+                .then(comment => {
+                    if (comment.error) {
+                        showMessage(comment.error, 'error');
+                        return;
+                    }
+
+                    // フォームをクリア
+                    contentInput.value = '';
+
+                    if (parentId) {
+                        hideReplyForm(parentId);
+                    }
+
+                    // コメントを再読み込み
+                    loadComments(novelId);
+                    showMessage('コメントを投稿しました', 'success');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showMessage('コメントの投稿に失敗しました', 'error');
+                });
         }
-        
+
         // 返信を投稿
         function postReply(novelId, parentId) {
             postComment(novelId, parentId);
         }
-        
+
         // コメントを削除
         function deleteComment(novelId, commentId) {
             if (!confirm('このコメントを削除しますか？')) {
                 return;
             }
-            
+
             fetch(`/api/novels/${novelId}/comments/${commentId}`, {
                 method: 'DELETE',
                 headers: {
@@ -965,22 +972,22 @@
                     user_identifier: userIdentifier
                 })
             })
-            .then(response => response.json())
-            .then(result => {
-                if (result.error) {
-                    showMessage(result.error, 'error');
-                    return;
-                }
-                
-                loadComments(novelId);
-                showMessage(result.message, 'success');
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showMessage('コメントの削除に失敗しました', 'error');
-            });
+                .then(response => response.json())
+                .then(result => {
+                    if (result.error) {
+                        showMessage(result.error, 'error');
+                        return;
+                    }
+
+                    loadComments(novelId);
+                    showMessage(result.message, 'success');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showMessage('コメントの削除に失敗しました', 'error');
+                });
         }
-        
+
         // 日付フォーマット
         function formatDate(dateString) {
             const date = new Date(dateString);
@@ -990,7 +997,7 @@
             const minutes = Math.floor(seconds / 60);
             const hours = Math.floor(minutes / 60);
             const days = Math.floor(hours / 24);
-            
+
             if (seconds < 60) {
                 return 'たった今';
             } else if (minutes < 60) {
@@ -1003,7 +1010,7 @@
                 return date.toLocaleDateString('ja-JP');
             }
         }
-        
+
         // 反応をトグル
         function toggleReaction(novelId, type, button) {
             fetch(`/api/novels/${novelId}/reactions`, {
@@ -1016,37 +1023,37 @@
                     user_identifier: userIdentifier
                 })
             })
-            .then(response => response.json())
-            .then(data => {
-                // ボタンの状態を更新
-                if (data.action === 'added') {
-                    button.classList.add('active');
-                    if (!userReactions[novelId]) userReactions[novelId] = {};
-                    userReactions[novelId][type] = true;
-                } else {
-                    button.classList.remove('active');
-                    if (userReactions[novelId]) {
-                        delete userReactions[novelId][type];
+                .then(response => response.json())
+                .then(data => {
+                    // ボタンの状態を更新
+                    if (data.action === 'added') {
+                        button.classList.add('active');
+                        if (!userReactions[novelId]) userReactions[novelId] = {};
+                        userReactions[novelId][type] = true;
+                    } else {
+                        button.classList.remove('active');
+                        if (userReactions[novelId]) {
+                            delete userReactions[novelId][type];
+                        }
                     }
-                }
-                
-                // カウントを更新
-                const countSpan = button.querySelector('.count');
-                countSpan.textContent = data.counts[type] || 0;
-                
-                // ローカルストレージに保存
-                saveUserReactions();
-                
-                // アニメーション効果
-                button.style.transform = 'scale(1.2)';
-                setTimeout(() => {
-                    button.style.transform = 'scale(1)';
-                }, 200);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showMessage('反応の更新に失敗しました', 'error');
-            });
+
+                    // カウントを更新
+                    const countSpan = button.querySelector('.count');
+                    countSpan.textContent = data.counts[type] || 0;
+
+                    // ローカルストレージに保存
+                    saveUserReactions();
+
+                    // アニメーション効果
+                    button.style.transform = 'scale(1.2)';
+                    setTimeout(() => {
+                        button.style.transform = 'scale(1)';
+                    }, 200);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showMessage('反応の更新に失敗しました', 'error');
+                });
         }
 
         // 詳細を閉じる
@@ -1059,13 +1066,13 @@
         // 小説を作成
         function createNovel(event) {
             event.preventDefault();
-            
+
             const data = {
                 title: document.getElementById('title').value,
                 author_name: document.getElementById('author').value || 'kerok',
                 description: document.getElementById('description').value
             };
-            
+
             fetch('/api/novels', {
                 method: 'POST',
                 headers: {
@@ -1073,32 +1080,32 @@
                 },
                 body: JSON.stringify(data)
             })
-            .then(response => response.json())
-            .then(novel => {
-                showMessage('小説を投稿しました！', 'success');
-                document.getElementById('title').value = '';
-                document.getElementById('author').value = '';
-                document.getElementById('description').value = '';
-                loadNovelSelect();
-                switchTab('list');
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showMessage('投稿に失敗しました', 'error');
-            });
+                .then(response => response.json())
+                .then(novel => {
+                    showMessage('小説を投稿しました！', 'success');
+                    document.getElementById('title').value = '';
+                    document.getElementById('author').value = '';
+                    document.getElementById('description').value = '';
+                    loadNovelSelect();
+                    switchTab('list');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showMessage('投稿に失敗しました', 'error');
+                });
         }
 
         // 章を追加
         function addChapter(event) {
             event.preventDefault();
-            
+
             const novelId = document.getElementById('novel-select').value;
             const data = {
                 chapter_number: parseInt(document.getElementById('chapter-number').value),
                 title: document.getElementById('chapter-title').value,
                 content: document.getElementById('chapter-content').value
             };
-            
+
             fetch(`/api/novels/${novelId}/chapters`, {
                 method: 'POST',
                 headers: {
@@ -1106,17 +1113,17 @@
                 },
                 body: JSON.stringify(data)
             })
-            .then(response => response.json())
-            .then(chapter => {
-                showMessage('章を追加しました！', 'success');
-                document.getElementById('chapter-number').value = '';
-                document.getElementById('chapter-title').value = '';
-                document.getElementById('chapter-content').value = '';
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showMessage('章の追加に失敗しました', 'error');
-            });
+                .then(response => response.json())
+                .then(chapter => {
+                    showMessage('章を追加しました！', 'success');
+                    document.getElementById('chapter-number').value = '';
+                    document.getElementById('chapter-title').value = '';
+                    document.getElementById('chapter-content').value = '';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showMessage('章の追加に失敗しました', 'error');
+                });
         }
 
         // 小説選択用のセレクトボックスを更新
@@ -1149,4 +1156,5 @@
         }
     </script>
 </body>
+
 </html>

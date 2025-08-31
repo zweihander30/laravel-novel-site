@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\NovelController;
 
 // テスト用のユーザーデータAPI
 Route::get('/users', function () {
@@ -32,10 +33,15 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 // 小説関連のAPIルート
-Route::get('/novels', [App\Http\Controllers\NovelController::class, 'index']);
-Route::post('/novels', [App\Http\Controllers\NovelController::class, 'store']);
-Route::get('/novels/{id}', [App\Http\Controllers\NovelController::class, 'show']);
-Route::post('/novels/{id}/chapters', [App\Http\Controllers\NovelController::class, 'addChapter']);
+// Route::get('/novels', [App\Http\Controllers\NovelController::class, 'index']);
+// Route::post('/novels', [App\Http\Controllers\NovelController::class, 'store']);
+// Route::get('/novels/{id}', [App\Http\Controllers\NovelController::class, 'show']);
+// Route::post('/novels/{id}/chapters', [App\Http\Controllers\NovelController::class, 'addChapter']);
+
+Route::get('/novels', [NovelController::class, 'index'])->name('novels.index');
+Route::post('/novels', [NovelController::class, 'index'])->name('novels.store');
+Route::get('/novels/{id}', [NovelController::class, 'show'])->name('novels.show');
+Route::post('/novels/{id}/chapters', [NovelController::class, 'addChapter'])->name('novels.chapters.store');
 
 // 反応機能のルート
 Route::post('/novels/{id}/reactions', [App\Http\Controllers\ReactionController::class, 'toggle']);
