@@ -713,22 +713,26 @@
                     ];
 
                     const reactionButtons = reactions.map(r => {
-                        const count = novel.reaction_counts && novel.reaction_counts[r.type] ? novel.reaction_counts[r.type] : 0;
+                        // novel.data.reaction_counts からカウントを取得
+                        const count = novel.data.stats && novel.data.stats[r.type]
+                            ? novel.data.stats[r.type]
+                            : 0;
+
                         const isActive = userReactions[novelId] && userReactions[novelId][r.type];
 
                         return `
-                            <button class="reaction-button ${isActive ? 'active' : ''}" 
-                                    onclick="toggleReaction(${novelId}, '${r.type}', this)">
-                                <span class="emoji">${r.emoji}</span>
-                                <span class="label">${r.label}</span>
-                                <span class="count">${count}</span>
-                            </button>
-                        `;
+        <button class="reaction-button ${isActive ? 'active' : ''}" 
+                onclick="toggleReaction(${novelId}, '${r.type}', this)">
+            <span class="emoji">${r.emoji}</span>
+            <span class="label">${r.label}</span>
+            <span class="count">${count}</span>
+        </button>
+    `;
                     }).join('');
 
                     let chaptersHtml = '';
-                    if (novel.chapters && novel.chapters.length > 0) {
-                        chaptersHtml = novel.chapters.map(chapter => `
+                    if (novel.data.chapters && novel.data.chapters.length > 0) {
+                        chaptersHtml = novel.data.chapters.map(chapter => `
                             <div class="chapter-item">
                                 <div class="chapter-number">第${chapter.chapter_number}章: ${escapeHtml(chapter.title)}</div>
                                 <div class="chapter-content">${escapeHtml(chapter.content)}</div>
@@ -739,11 +743,11 @@
                     }
 
                     detailDiv.innerHTML = `
-                        <h2>${escapeHtml(novel.title)}</h2>
-                        <p style="color: #666; margin-bottom: 10px;">著者: ${escapeHtml(novel.author_name)}</p>
+                        <h2>${escapeHtml(novel.data.title)}</h2>
+                        <p style="color: #666; margin-bottom: 10px;">著者: ${escapeHtml(novel.data ? novel.data.author_name : novel.author_name)}</p>
                         <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
                             <strong>あらすじ：</strong><br>
-                            ${escapeHtml(novel.description)}
+                            ${escapeHtml(novel.data.description)}
                         </div>
                         <div class="reactions-container">
                             ${reactionButtons}
@@ -788,7 +792,6 @@
                 });
         }
 
-        // コメントを読み込む
         function loadComments(novelId) {
             fetch(`/api/novels/${novelId}/comments`)
                 .then(response => response.json())
@@ -799,12 +802,16 @@
 
                     // コメント一覧を表示
                     const commentsList = document.getElementById('comments-list');
-                    if (data.comments.data.length === 0) {
+
+                    // ページネーションの場合とそうでない場合の両方に対応
+                    const comments = data.comments.data || data.comments;
+
+                    if (!comments || comments.length === 0) {
                         commentsList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">まだコメントがありません。最初のコメントを投稿してみましょう！</p>';
                         return;
                     }
 
-                    commentsList.innerHTML = data.comments.data.map(comment => renderComment(comment)).join('');
+                    commentsList.innerHTML = comments.map(comment => renderComment(comment)).join('');
                 })
                 .catch(error => {
                     console.error('Error:', error);
